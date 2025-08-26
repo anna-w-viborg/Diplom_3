@@ -10,10 +10,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from setuptools import logging
 
-from Diplom_3.page_objects.base_page import BasePage
-from Diplom_3.locators import Locators
-from Diplom_3.data import Data
-from Diplom_3.page_objects.main_page import MainPage
+from page_objects.base_page import BasePage
+from locators import Locators
+from data import Data
+from page_objects.main_page import MainPage
 
 
 

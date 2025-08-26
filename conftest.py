@@ -1,5 +1,23 @@
 import pytest
 from selenium import webdriver
+from data import Data
+
+@pytest.fixture(scope="function")
+def driverrr():
+    driver = webdriver.Firefox()
+    driver.maximize_window()
+    driver.get(Data.MAIN_URL)
+    driver.implicitly_wait(10)
+    yield driver
+    driver.quit()
+
+@pytest.fixture
+def driverr():
+    driver = webdriver.Chrome()
+    driver.get(Data.MAIN_URL)
+    yield driver
+    driver.quit()
+
 
 class WebdriverFactory:
     @staticmethod

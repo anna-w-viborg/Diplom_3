@@ -1,9 +1,6 @@
 import allure
-import pytest
-import selenium
-from Diplom_3.page_objects.main_page import MainPage
-from Diplom_3.data import Data
-from Diplom_3.conftest import *
+from page_objects.main_page import MainPage
+from conftest import *
 
 
 class TestFunctional:

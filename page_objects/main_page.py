@@ -4,9 +4,9 @@ import selenium
 from selenium.common import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Diplom_3.page_objects.base_page import BasePage
-from Diplom_3.locators import Locators
-from Diplom_3.data import Data
+from page_objects.base_page import BasePage
+from locators import Locators
+from data import Data
 
 class MainPage(BasePage):
 
