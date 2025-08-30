@@ -10,61 +10,49 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from setuptools import logging
 
-from page_objects.base_page import BasePage
-from locators import Locators
-from data import Data
-from page_objects.main_page import MainPage
-
+from Diplom_3.page_objects.base_page import BasePage
+from Diplom_3.locators import Locators
+from Diplom_3.data import Data
+from Diplom_3.page_objects.main_page import MainPage
+from Diplom_3.urls import Urls
 
 
 class OrderPage(BasePage):
 
-    def login(self):
-        self.go_to_url(Data.LOGIN_URL)
-        self.send_keys_to_field(Locators.EMAIL_FIELD, Data.EMAIL)
-        self.send_keys_to_field(Locators.PASSWORD_FIELD, Data.PASSWORD)
+    @allure.step('Авторизация зарегистрированного пользователя')
+    def login(self, email, password):
+        self.go_to_url(f"{Urls.MAIN_URL}{Urls.LOGIN_URL}")
+        self.send_keys_to_field(Locators.EMAIL_FIELD, email)
+        self.send_keys_to_field(Locators.PASSWORD_FIELD, password)
         self.click_element(Locators.LOGIN_BUTTON)
 
+    @allure.step('Клик на кнопку "Лента заказов"')
     def click_order_band(self):
         self.click_element(Locators.ORDER_BAND_BUTTON)
 
+    @allure.step('Клик на крестик закрытия окна заказа')
     def click_cross_order(self):
         self.click_element(Locators.CROSS_EXIT_ORDER)
 
+    @allure.step('Получение значения счетчика вполненных за все время заказов')
     def get_all_time(self):
         return self.get_text_element(Locators.ALL_TIME)
 
+    @allure.step('Получение значения выполненных за сегодня заказов')
     def get_today(self):
         return self.get_text_element(Locators.TODAY)
 
+    @allure.step('Получение значения счетчика выполненных за сегодня заказов')
     def get_counter_value_today(self):
-        try:
-            # Ожидание появления элемента
-            element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(Locators.TODAY))
-            # Получение текста и преобразование в число
-            text = element.text.strip()
-            if not text:
-                raise ValueError("Элемент пуст")
-            return int(text)
-        except (TimeoutException, NoSuchElementException) as e:
-            pass
+        self.get_counter_done(Locators.TODAY)
 
-
+    @allure.step('Получение текста из списка "В работе"')
     def get_text_in_ready(self):
-        try:
-            # Ожидание появления элемента
-            element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(Locators.LIST_IN_WORK))
-            # Получение текста и
-            text = element.text()
-            if not text:
-                raise ValueError("Элемент пуст")
-            return text
-        except (TimeoutException, NoSuchElementException) as e:
-            pass
+        self.get_text_list(Locators.LIST_IN_WORK)
 
 
 
-
+    @allure.step('Оформление нового заказа')
     def new_order(self):
         self.click_element(Locators.CONSTRUCTOR_BUTTON)
         #кликнуть конструктор
@@ -76,7 +64,7 @@ class OrderPage(BasePage):
         #self.go_to_url(Data.ORDER_BAND_URL)
         #
         #
-
+    @allure.step('Оформление нового заказа')
     def new_order_long(self):
         self.click_element(Locators.CONSTRUCTOR_BUTTON)
         #кликнуть конструктор
@@ -98,68 +86,45 @@ class OrderPage(BasePage):
         basket = self.wait_visibility_element(locator=Locators.BASKET)
         self.drag_and_drop_element(source=ingredient, target=basket)
 
+    @allure.step('Переход на адрес главной страницы')
     def get_main_page(self):
-        self.go_to_url(Data.MAIN_URL)
+        self.go_to_url(Urls.MAIN_URL)
 
-
+    @allure.step('Получение номера заказа из окна с деталями заказа')
     def get_order_id_from_details(self):
         self.find_and_wait_until_id_changes(Locators.ORDER_ID,"9999")
         return self.get_text_from_id()
 
-    def find_and_wait_until_id_changes(self, locator, initial_text='9999', timeout=30):
-        start_time = time.time()
-        current_text = initial_text
-        while time.time() - start_time < timeout:
-            try:
-                element = self.find_id_with_wait()
-                current_text = element.text.strip()
-                if current_text != initial_text:
-                    return element
-                time.sleep(0.5)  # небольшая пауза перед следующей проверкой
-            except (TimeoutException, NoSuchElementException):
-                continue
-        raise TimeoutException(f"Текст элемента не изменился за {timeout} секунд")
+    @allure.step('Ожидание, пока появится номер заказа')
+    def find_and_wait_until_id_changes(self):
+        self.wait_change(Locators.ORDER_ID, initial_text='9999', timeout=30)
 
+
+    @allure.step('Получение id заказа с ожиданием')
     def find_id_with_wait(self):
-        try:
-            return WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(Locators.ORDER_ID))
-        except (TimeoutException, NoSuchElementException) as e:
-            pass
-            return None
+        self.find_text(Locators.ORDER_ID)
 
+    @allure.step('Получение текста id заказа')
     def get_text_from_id(self):
         element = self.find_id_with_wait()
         if element:
             return element.text.strip()
         return None
 
-
-
+    @allure.step('Получение значения в столбце "В работе"')
     def get_ready_from_in_work(self):
         self.find_and_wait_until_in_work_changes(Locators.LIST_IN_WORK, "Все текущие заказы готовы!")
         return self.get_text_from_in_work()
 
-    def find_and_wait_until_in_work_changes(self, locator, initial_text='Все текущие заказы готовы!', timeout=30):
-        start_time = time.time()
-        current_text = initial_text
-        while time.time() - start_time < timeout:
-            try:
-                element = self.find_in_work_with_wait()
-                current_text = element.text.strip()
-                if current_text != initial_text:
-                    return element
-                time.sleep(0.5)  # небольшая пауза перед следующей проверкой
-            except (TimeoutException, NoSuchElementException):
-                continue
-        raise TimeoutException(f"Текст элемента не изменился за {timeout} секунд")
+    @allure.step('Ожидание, пока в столбце "В работе" появится номер заказа')
+    def find_and_wait_until_in_work_changes(self):
+        self.wait_change(Locators.LIST_IN_WORK, initial_text='Все текущие заказы готовы!', timeout=30)
 
+    @allure.step('Ожидание видимости списка "В работе"')
     def find_in_work_with_wait(self):
-        try:
-            return WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(Locators.LIST_IN_WORK))
-        except (TimeoutException, NoSuchElementException) as e:
-            pass
-            return None
+        self.find_text(Locators.LIST_IN_WORK)
 
+    @allure.step('Получение текста номера последнего заказа из списка "В работе"')
     def get_text_from_in_work(self):
         element = self.find_in_work_with_wait()
         if element:

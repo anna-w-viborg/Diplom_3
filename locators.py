@@ -46,7 +46,7 @@ class Locators:
     ORDER_ID = (By.XPATH, "//h2[contains(@class, 'Modal_modal__title_shadow')]")
 
     LIST_IN_WORK = (By.XPATH, "//ul[contains(@class, 'OrderFeed_orderList')]/li[1]")
-    #LIST_IN_WORK = (By.XPATH, "//li[contains(@class, 'text text_type_main-medium')]")
+
 
 
 

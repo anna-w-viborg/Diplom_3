@@ -1,6 +1,7 @@
 import allure
-from page_objects.main_page import MainPage
-from conftest import *
+from Diplom_3.page_objects.main_page import MainPage
+from Diplom_3.conftest import *
+from Diplom_3.urls import Urls
 
 
 class TestFunctional:
@@ -32,8 +33,6 @@ class TestFunctional:
             count_1 = main_page.get_count()
         with allure.step('Перетаскиваем соус в бургер'):
             main_page.put_ingredient_into_basket()
-       # with allure.step('Скроллим до элемента x-sauce'):
-          #  main_page.scroll_x_sauce()
         with allure.step('Проверяем, изменилось ли значение счетчика'):
             count_2 = main_page.get_count()
             assert int(count_2) == int(count_1) + 1
@@ -48,7 +47,7 @@ class TestFunctional:
         with allure.step('Клик по кнопке "Конструктор"'):
             main_page.click_constructor()
         with allure.step('Проверка, что отображается страница с конструктором'):
-            assert main_page.get_current_url() == Data.MAIN_URL
+            assert main_page.get_current_url() == Urls.MAIN_URL
 
 
     @allure.title('Переход в ленту заказов')
@@ -60,7 +59,7 @@ class TestFunctional:
         with allure.step('Клик по кнопке "Лента заказов'):
             main_page.click_order_band()
         with allure.step('Проверка, что загрузилась страница с лентой заказов'):
-            assert main_page.get_current_url() == Data.ORDER_BAND_URL
+            assert main_page.get_current_url() == f"{Urls.MAIN_URL}{Urls.ORDER_BAND_URL}"
 
 
     @allure.title('Тест закрытия деталей ингредиента')

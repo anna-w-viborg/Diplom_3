@@ -17,7 +17,7 @@ class BasePage:
     def scroll_to_element(self, locator):
         element = self.driver.find_element(*locator)
         self.driver.execute_script('arguments[0].scrollIntoView();', element)
-
+    @allure.step('Кликаем на элемент')
     def click_element(self, locator):
         element = WebDriverWait(self.driver, 25).until(EC.element_to_be_clickable(locator))
         actions = ActionChains(self.driver)
@@ -32,10 +32,8 @@ class BasePage:
     def click_on_element(self, locator):
         self.driver.find_element(locator).click()
 
-   # @allure.step('Заполнить поле данными')
-   # def send_keys_to_field(self, locator, keys):
-    #    self.driver.find_element(locator).send_keys(keys)
 
+    @allure.step('Вставляем значение в поле')
     def send_keys_to_field(self, locator, keys):
         try:
             # Распаковываем кортеж локатора
@@ -72,15 +70,16 @@ class BasePage:
     def drag_and_drop_element(self, source, target):
         drag_and_drop(self.driver, source, target)
 
-    @allure.step('')
+    @allure.step('Переходим на адрес')
     def go_to_url(self, locator):
         return self.driver.get(locator)
 
+    @allure.step('Получаем текст элемента')
     def get_text_element(self, locator):          # Распаковываем кортеж локатора
         element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(locator))
         return element.text
 
-
+    @allure.step('Ожидание видимости элемента')
     def wait_visibility_element(self, locator):
         try:
             return WebDriverWait(self.driver, 20).until(
@@ -89,11 +88,52 @@ class BasePage:
         except TimeoutException:
             raise Exception(f"Элемент не найден: {locator}")
 
-#    def get_text_element_2(self, locator):
- #       try:
-  #          element = WebDriverWait(self.driver, 20).until(
-   #             EC.visibility_of_element_located(locator)
-    #        )
-     #       return element.text
-      #  except (TimeoutException):
-       #     return None
+    @allure.step('Получение текста счетчика')
+    def get_counter_done(self, locator):
+        try:
+            # Ожидание появления элемента
+            element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(locator))
+            # Получение текста и преобразование в число
+            text = element.text.strip()
+            if not text:
+                raise ValueError("Элемент пуст")
+            return int(text)
+        except (TimeoutException, NoSuchElementException) as e:
+            pass
+
+    @allure.step('Найти элемент с ожиданием')
+    def find_text(self, locator):
+        try:
+            return WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(locator))
+        except (TimeoutException, NoSuchElementException) as e:
+            pass
+            return None
+
+    @allure.step('Получение текста списка')
+    def get_text_list(self, locator):
+        try:
+            # Ожидание появления элемента
+            element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(locator))
+            # Получение текста и
+            text = element.text()
+            if not text:
+                raise ValueError("Элемент пуст")
+            return text
+        except (TimeoutException, NoSuchElementException) as e:
+            pass
+
+    @allure.step('Ожидание изменения первоначального текста')
+    def wait_change(self, locator, initial_text, timeout):
+        current_text = initial_text
+        try:
+            while current_text == initial_text:
+                try:
+                    element = WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(locator), message="Элемент не найден")
+                    current_text = element.text.strip()
+                except NoSuchElementException:
+                    continue
+            return element
+        except TimeoutException:
+            raise TimeoutException(f"Текст элемента не изменился за {timeout} секунд")
+
+

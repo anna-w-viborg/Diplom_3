@@ -2,6 +2,7 @@ import allure
 from page_objects.order_page import OrderPage
 from page_objects.main_page import MainPage
 from conftest import *
+from Diplom_3.data import Data
 
 class TestOrderBand:
 
@@ -11,7 +12,7 @@ class TestOrderBand:
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
         with allure.step('Вход в аккаунт'):
-            order_page.login()
+            order_page.login(Data.EMAIL, Data.PASSWORD)
         with allure.step('Переход на страницу "Лента заказов"'):
             main_page.get_band_page()
         with allure.step('Получить количество заказов в разделе "Выполнено за все время"'):
@@ -31,7 +32,7 @@ class TestOrderBand:
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
         with allure.step('Вход в аккаунт'):
-            order_page.login()
+            order_page.login(Data.EMAIL, Data.PASSWORD)
         with allure.step('Переход на страницу "Лента заказов"'):
             main_page.get_band_page()
         with allure.step('Получить количество заказов в разделе "Выполнено за все время"'):
@@ -51,7 +52,7 @@ class TestOrderBand:
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
         with allure.step('Вход в аккаунт'):
-            order_page.login()
+            order_page.login(Data.EMAIL, Data.PASSWORD)
         with allure.step('Совершить новый заказ'):
             order_page.new_order_long()
         with allure.step('Получить id заказа'):
